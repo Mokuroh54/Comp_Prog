@@ -5,25 +5,17 @@ for moo in `ls`; do
             cd $hundreds
             echo $hundreds
             for tens in `ls`; do
-                if [ -d $tens ]; then
-                    cd $tens
-                    for contest in `ls`; do
-                        if [ -d $contest ]; then
-                            cd $contest
-                            echo $contest
-                            for problem in `ls`; do
-                                if [ "${problem:1:1}" = "_" ]; then
-                                    mv $problem $contest${problem:0:1}".cpp"
-                                fi
-                                if [ "${problem:4:1}" = "_" ]; then
-                                    mv $problem $contest${problem:5:1}".cpp"
-                                fi
-                            done
-                            cd ..
-                        fi
-                    done
-                    cd ..
-                fi
+                for problem in `ls`; do
+                    if [ "${problem:4:1}" = "_" ]; then
+                        mv $problem ${problem:0:4}${problem:5:1}".cpp"
+                    fi
+                    if [ "${problem:3:1}" = "_" ]; then
+                        mv $problem ${problem:0:3}${problem:4:1}".cpp"
+                    fi
+                    if [ "${problem:2:1}" = "_" ]; then
+                        mv $problem ${problem:0:2}${problem:3:1}".cpp"
+                    fi
+                done
             done
             cd ..
         done
