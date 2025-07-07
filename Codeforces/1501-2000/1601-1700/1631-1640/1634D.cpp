@@ -21,7 +21,7 @@ using namespace std;
 #define ld long double
 #define ull unsigned ll
 
-#define endl "\n"
+// #define endl "\n"
 #define EPS 1e-9
 
 #define size(v) (int) v.size()
@@ -42,9 +42,9 @@ typedef vector<int> vi;
 typedef vector<vi> vii;
 typedef vector<pii> vpii;
 
-#define add(a, b) (((a) + (b)) >= MOD ? (a) + (b) - MOD : (a) + (b))
-#define sub(a, b) (((a) - (b)) >= 0 ? (a) - (b) : (a) + MOD - (b))
-#define mult(a, b) (((a) * (b)) % MOD)
+#define add(a, b) ((a + b) >= MOD ? a + b - MOD : a + b)
+#define sub(a, b) ((a - b) >= 0 ? a - b : a + MOD - b)
+#define mult(a, b) ((a * b) % MOD)
 inline ll power(ll a, ll b) {
     ll n = a;
     ll ans = 1;
@@ -57,7 +57,7 @@ inline ll power(ll a, ll b) {
 
     return ans;
 }
-#define divide(a, b) mult(a, power(b, MOD - 2))
+#define divide(a, b) ((a * power(b, MOD - 2)) % MOD)
 
 #define maxeq(x, y) x = x > y ? x : y
 #define mineq(x, y) x = x < y ? x : y
@@ -69,14 +69,53 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
+const int MAXN = 1010;
 int N;
 
 void reset_tc() {
 
 }
 
+vector<pii> ask(int a, int b, int c, int d) {
+    vector<pii> v;
+    int maxv = 0;
+    int n;
+    cout << "? " << b << " " << c << " " << d << endl;
+    cin >> n;
+    v.pb(pii(n, a));
+    cout << "? " << a << " " << c << " " << d << endl;
+    cin >> n;
+    v.pb(pii(n, b));
+    cout << "? " << a << " " << b << " " << d << endl;
+    cin >> n;
+    v.pb(pii(n, c));
+    cout << "? " << a << " " << b << " " << c << endl;
+    cin >> n;
+    v.pb(pii(n, d));
+
+    sort(v.begin(), v.end());
+
+    return v;
+}
+
 void solve() {
+    cin >> N;
+    int a = 1, b = 2;
+    for (int i = 3; i <= N - 1; i += 2) {
+        vector<pii> v = ask(a, b, i, i + 1);
+        a = v[0].SS;
+        b = v[1].SS;
+    }
+    if (N & 1) {
+        int c = 1;
+        while (c <= N && (a == c || b == c)) c++;
+        vector<pii> v = ask(a, b, c, N);
+        a = v[0].SS;
+        b = v[1].SS;
+    }
+
+    cout << "! " << a << " " << b << endl;
+
     reset_tc();
 }
 
@@ -89,8 +128,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

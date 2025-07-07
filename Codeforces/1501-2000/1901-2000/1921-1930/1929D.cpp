@@ -33,7 +33,7 @@ using namespace std;
 
 ll INF = 1000000000;
 ll LINF = 1000000000000000000;
-ll MOD = 0;
+ll MOD = 998244353;
 
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
@@ -42,9 +42,9 @@ typedef vector<int> vi;
 typedef vector<vi> vii;
 typedef vector<pii> vpii;
 
-#define add(a, b) (((a) + (b)) >= MOD ? (a) + (b) - MOD : (a) + (b))
-#define sub(a, b) (((a) - (b)) >= 0 ? (a) - (b) : (a) + MOD - (b))
-#define mult(a, b) (((a) * (b)) % MOD)
+#define add(a, b) ((a + b) >= MOD ? a + b - MOD : a + b)
+#define sub(a, b) ((a - b) >= 0 ? a - b : a + MOD - b)
+#define mult(a, b) ((a * b) % MOD)
 inline ll power(ll a, ll b) {
     ll n = a;
     ll ans = 1;
@@ -57,10 +57,10 @@ inline ll power(ll a, ll b) {
 
     return ans;
 }
-#define divide(a, b) mult(a, power(b, MOD - 2))
+#define divide(a, b) ((a * power(b, MOD - 2)) % MOD)
 
-#define maxeq(x, y) x = x > y ? x : y
-#define mineq(x, y) x = x < y ? x : y
+#define maxeq(x, y) if (x < y) x = y
+#define mineq(x, y) if (x > y) x = y
 #define addeq(x, y) x = add(x, y)
 #define subeq(x, y) x = sub(x, y)
 #define multeq(x, y) x = mult(x, y)
@@ -69,14 +69,47 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
+const int MAXN = 300010;
 int N;
+vector<int> nbs[MAXN];
+ll dp[MAXN][2][3];
 
 void reset_tc() {
+    for (int i = 1; i <= N; i++) {
+        nbs[i].clear();
+        dp[i][0][1] = dp[i][0][2] = dp[i][1][0] = dp[i][1][1] = 0;
+    }
+}
 
+void DFS(int a, int p) {
+    dp[a][1][0] = 1;
+
+    if (size(nbs[a]) > 1 || (a == 1 && size(nbs[a]))) dp[a][0][1] = 1;
+
+    for (int nb : nbs[a]) if (nb != p) {
+        DFS(nb, a);
+        multeq(dp[a][0][1], add(1, add(dp[nb][1][0], dp[nb][0][1])));
+        addeq(dp[a][1][1], add(dp[nb][1][0], dp[nb][0][1]));
+        addeq(dp[a][0][2], add(dp[nb][0][2], dp[nb][1][1]));
+    }
+
+    if (size(nbs[a]) > 1 || (a == 1 && size(nbs[a]))) subeq(dp[a][0][1], 1);
+
+    // cout << a << " " << dp[a][0][1] << " " << dp[a][0][2] << " " 
+    //      << dp[a][1][0] << " " << dp[a][1][1] << endl;
 }
 
 void solve() {
+    cin >> N;
+    for (int i = 1; i < N; i++) {
+        int a, b;
+        cin >> a >> b;
+        nbs[a].pb(b);
+        nbs[b].pb(a);
+    }
+
+    DFS(1, 1);
+    cout << add(1, add(add(dp[1][0][1], dp[1][0][2]), add(dp[1][1][0], dp[1][1][1]))) << endl;
     reset_tc();
 }
 
@@ -89,8 +122,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

@@ -77,6 +77,22 @@ void reset_tc() {
 }
 
 void solve() {
+    cin >> N;
+    set<int> guys;
+    int yay = 0;
+    for (int i = 1; i <= N; i++) {
+        int n;
+        cin >> n;
+        if (!yay && size(guys) && n < *guys.rbegin()) {
+            cout << "YES" << endl;
+            cout << 2 << endl;
+            cout << *guys.rbegin() << " " << n << endl;
+            yay = 1;
+            // return;
+        }
+        guys.insert(n);
+    }
+    if (!yay) cout << "NO" << endl;
     reset_tc();
 }
 
@@ -89,8 +105,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

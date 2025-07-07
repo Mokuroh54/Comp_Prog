@@ -71,12 +71,42 @@ mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 const int MAXN = 0;
 int N;
+int guys[3];
 
 void reset_tc() {
-
+    guys[0] = guys[1] = guys[2] = 0;
 }
 
 void solve() {
+    cin >> N;
+    set<int> ducks;
+    int have_1 = 0;
+    int max_0 = 0;
+    for (int i = 1; i <= N; i++) {
+        int n;
+        cin >> n;
+        ducks.insert(n);
+        if (n == 1) have_1 = 1;
+        guys[n % 3]++;
+        if (n % 3 == 0) maxeq(max_0, n);
+    }
+
+    int ans = *ducks.rbegin() / 3;
+    // cout << ans << endl;
+    if (guys[2]) {
+        ans++;
+        if (guys[1]) {
+            ans++;
+            if (*ducks.rbegin() % 3 == 0) ans--;
+
+            if (*ducks.rbegin() % 3 == 1 && !ducks.count(*ducks.rbegin() / 3 * 3) &&
+                !ducks.count(1)) ans--;
+        }
+    }
+    else if (guys[1]) ans++;
+
+    cout << ans << endl;
+
     reset_tc();
 }
 
@@ -89,8 +119,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

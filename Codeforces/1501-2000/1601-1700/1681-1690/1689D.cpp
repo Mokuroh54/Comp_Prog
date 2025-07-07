@@ -42,9 +42,9 @@ typedef vector<int> vi;
 typedef vector<vi> vii;
 typedef vector<pii> vpii;
 
-#define add(a, b) (((a) + (b)) >= MOD ? (a) + (b) - MOD : (a) + (b))
-#define sub(a, b) (((a) - (b)) >= 0 ? (a) - (b) : (a) + MOD - (b))
-#define mult(a, b) (((a) * (b)) % MOD)
+#define add(a, b) ((a + b) >= MOD ? a + b - MOD : a + b)
+#define sub(a, b) ((a - b) >= 0 ? a - b : a + MOD - b)
+#define mult(a, b) ((a * b) % MOD)
 inline ll power(ll a, ll b) {
     ll n = a;
     ll ans = 1;
@@ -57,7 +57,7 @@ inline ll power(ll a, ll b) {
 
     return ans;
 }
-#define divide(a, b) mult(a, power(b, MOD - 2))
+#define divide(a, b) ((a * power(b, MOD - 2)) % MOD)
 
 #define maxeq(x, y) x = x > y ? x : y
 #define mineq(x, y) x = x < y ? x : y
@@ -69,14 +69,43 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
-int N;
+const int MAXN = 1010;
+
+int N, M;
 
 void reset_tc() {
 
 }
 
 void solve() {
+    cin >> N >> M;
+    vector<int> blacks, blacks2;
+    for (int i = 1; i <= N; i++) for (int j = 1; j <= M; j++) {
+        char c;
+        cin >> c;
+        if (c == 'B') {
+            blacks.pb(i + j);
+            blacks2.pb(i - j);
+        }
+    }
+
+    sort(blacks.begin(), blacks.end());
+    sort(blacks2.begin(), blacks2.end());
+
+    int best_ans = INF;
+    pii best_pt = pii(0, 0);
+    for (int i = 1; i <= N; i++) for (int j = 1; j <= M; j++) {
+        int ans = max(max(i + j - blacks.front(), blacks.back() - i - j),  
+                      max(i - j - blacks2.front(), blacks2.back() - i + j));
+        if (ans < best_ans) {
+            best_ans = ans;
+            best_pt = pii(i, j);
+        }
+    }
+
+    // cout << best_ans << endl;
+    cout << best_pt.FF << " " << best_pt.SS << endl;
+
     reset_tc();
 }
 
@@ -89,8 +118,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

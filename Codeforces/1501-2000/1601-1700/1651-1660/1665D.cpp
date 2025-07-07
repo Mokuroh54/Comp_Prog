@@ -21,7 +21,7 @@ using namespace std;
 #define ld long double
 #define ull unsigned ll
 
-#define endl "\n"
+// #define endl "\n"
 #define EPS 1e-9
 
 #define size(v) (int) v.size()
@@ -42,9 +42,9 @@ typedef vector<int> vi;
 typedef vector<vi> vii;
 typedef vector<pii> vpii;
 
-#define add(a, b) (((a) + (b)) >= MOD ? (a) + (b) - MOD : (a) + (b))
-#define sub(a, b) (((a) - (b)) >= 0 ? (a) - (b) : (a) + MOD - (b))
-#define mult(a, b) (((a) * (b)) % MOD)
+#define add(a, b) ((a + b) >= MOD ? a + b - MOD : a + b)
+#define sub(a, b) ((a - b) >= 0 ? a - b : a + MOD - b)
+#define mult(a, b) ((a * b) % MOD)
 inline ll power(ll a, ll b) {
     ll n = a;
     ll ans = 1;
@@ -57,7 +57,7 @@ inline ll power(ll a, ll b) {
 
     return ans;
 }
-#define divide(a, b) mult(a, power(b, MOD - 2))
+#define divide(a, b) ((a * power(b, MOD - 2)) % MOD)
 
 #define maxeq(x, y) x = x > y ? x : y
 #define mineq(x, y) x = x < y ? x : y
@@ -77,6 +77,18 @@ void reset_tc() {
 }
 
 void solve() {
+    int x = 0;
+    int epping = 0;
+    for (int i = 0; i < 30; i++) {
+        cout << "? " << (1 << i) - epping << " " << (3 << i) - epping << endl;
+        int n;
+        cin >> n;
+        if (n == (2 << i)) {
+            x |= (1 << i);
+            epping |= (1 << i);
+        }
+    }
+    cout << "! " << x << endl;
     reset_tc();
 }
 
@@ -89,8 +101,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;
