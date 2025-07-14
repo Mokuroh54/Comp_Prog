@@ -5,7 +5,7 @@ struct BIT {
     BIT(int n) {arr.resize(n + 1);}
 
     void update(int a, ll v) {
-        while (a < arr.size()) {
+        while (a < size(arr)) {
             arr[a] += v;
             a += (a & -a);
         }
