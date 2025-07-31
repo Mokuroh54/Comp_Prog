@@ -8,12 +8,15 @@ for i in `seq 1 1000`; do
     echo "===== Test Case $i ====="
 
     ./incorrect
+    incorrect_exit=$?
     ./correct
+    correct_exit=$?
 
-    if diff -q "incorrect.out" "correct.out" > /dev/null; then
+    if [ $correct_exit == 0 ] && [ $incorrect_exit == 0 ] && 
+       diff -q "incorrect.out" "correct.out" > /dev/null; then
         continue
     else
-        echo "WA"
+        echo "Fuck"
         break
     fi
 
