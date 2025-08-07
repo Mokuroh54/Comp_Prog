@@ -1,6 +1,6 @@
-g++-15 -std=c++20 generator.cpp -o generator
-g++-15 -std=c++20 correct.cpp -o correct
-g++-15 -std=c++20 incorrect.cpp -o incorrect
+g++-15 -std=c++23 generator.cpp -o generator
+g++-15 -std=c++23 correct.cpp -o correct
+g++-15 -std=c++23 incorrect.cpp -o incorrect
 
 for i in `seq 1 1000`; do
     ./generator
