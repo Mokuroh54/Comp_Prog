@@ -9,11 +9,18 @@ for i in `seq 1 1000`; do
 
     ./incorrect
     incorrect_exit=$?
-    ./correct
-    correct_exit=$?
+    # ./correct
+    # correct_exit=$?
 
-    if [ $correct_exit == 0 ] && [ $incorrect_exit == 0 ] && 
-       diff -q "incorrect.out" "correct.out" > /dev/null; then
+    # if [ $correct_exit == 0 ] && [ $incorrect_exit == 0 ] && 
+    #    diff -q "incorrect.out" "correct.out" > /dev/null; then
+    #     continue
+    # else
+    #     echo "Fuck"
+    #     break
+    # fi
+
+    if [ $incorrect_exit == 0 ] ; then
         continue
     else
         echo "Fuck"

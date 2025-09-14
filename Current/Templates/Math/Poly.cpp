@@ -1,10 +1,22 @@
-ll w[(1 << 25)];
+ll w[(1 << 20)][20][2];
 struct Poly {
-    static void dft(vector<ll> &a, int tot, bool inv) {
+    static void init_w() {
         ll g = 3;
+        ll ginv = power(g, MOD - 2);
 
-        if (inv) g = power(g, MOD - 2);
+        for (int i = 0; i < 20; i++) {
+            w[0][i][0] = 1;
+            w[0][i][1] = 1;
 
+            ll t = power(g, (MOD - 1) / (1 << (i + 1)));
+            for (int j = 1; j < (1 << i); j++) w[j][i][0] = mult(w[j - 1][i][0], t);
+
+            ll t2 = power(ginv, (MOD - 1) / (1 << (i + 1)));
+            for (int j = 1; j < (1 << i); j++) w[j][i][1] = mult(w[j - 1][i][1], t2);
+        }
+    }
+
+    static void dft(vector<ll> &a, int tot, bool inv) {
         int sz = (1 << tot);
         for (int i = 1, j = 0; i < sz; i++) {
             int bit = sz >> 1;
@@ -13,64 +25,50 @@ struct Poly {
             if (i < j) swap(a[i], a[j]);
         }
 
+        if (!w[0][0][0]) init_w();
+
         for (int i = 0; i < tot; i++) {
-            w[0] = 1;
-            ll t = power(g, (MOD - 1) / (1 << (i + 1)));
-
-            for (int j = 1; j < (1 << i); j++)
-                w[j] = (w[j - 1] * t) % MOD;
-
             for (int j = 0; j < sz; j += (1 << (i + 1))) {
                 for (int k = 0; k < (1 << i); k++) {
-                    ll v = (w[k] * a[j + k + (1 << i)]) % MOD;
-                    ll f = (a[j + k] + v) % MOD;
-                    ll s = (a[j + k] + MOD - v) % MOD;
-                    a[j + k] = f;
-                    a[j + k + (1 << i)] = s;
+                    ll v = mult(w[k][i][inv], a[j + k + (1 << i)]);
+                    a[j + k + (1 << i)] = sub(a[j + k], v);
+                    a[j + k] = add(a[j + k], v);
                 }
             }
         }
 
         if (inv) {
             ll szinv = power(sz, MOD - 2);
-
-            for (int i = 0; i < sz; i++)
-                a[i] = (a[i] * szinv) % MOD;
+            for (int i = 0; i < sz; i++) multeq(a[i], szinv);
         }
     }
 
     static vector<ll> slowmult(vector<ll> &a, vector<ll> &b) {
-        vector<ll> c(a.size() + b.size() - 1);
+        vector<ll> c(size(a) + size(b) - 1);
 
-        for (int i = 0; i < a.size(); i++)
-            for (int j = 0; j < b.size(); j++) {
-                c[i + j] += a[i] * b[j];
-                c[i + j] %= MOD ; 
-            }
+        for (int i = 0; i < size(a); i++) for (int j = 0; j < size(b); j++)
+            addeq(c[i + j], mult(a[i], b[j]));
 
         return c;
     }
 
-    static vector<ll> pmult(vector<ll> a, vector<ll> b) {
-        // if (min(a.size(), b.size()) < 100) return slowmult(a, b);
-        int tot = 32 - __builtin_clz(a.size() + b.size() - 1);
-        if (a.size() == 1 && b.size() == 1) tot = 0;
+    static vector<ll> pmult(vector<ll>& a, vector<ll>& b) {
+        if (1ll * size(a) * size(b) <= 1000000) return slowmult(a, b);
+        int tot = 32 - __builtin_clz(size(a) + size(b) - 1);
+        if (size(a) == 1 && size(b) == 1) tot = 0;
 
-        int sz =  (1 << tot) ;
+        a.resize(1 << tot);
+        b.resize(1 << tot);
 
-        a.resize(sz);
-        b.resize(sz);
+        dft(a, tot, 0);
+        dft(b, tot, 0);
 
-        dft (a, tot, 0) ; 
-        dft (b, tot, 0) ;
+        vector<ll> c(1 << tot);
 
-        vector<ll> c(sz);
-
-        for (int i = 0; i < sz; i++)
-            c[i] = (a[i] * b[i]) % MOD;
+        for (int i = 0; i < 1 << tot; i++) c[i] = mult(a[i], b[i]);
 
         dft(c, tot, 1);
-        c.resize(a.size() + b.size() - 1);
+        c.resize(size(a) + size(b) - 1);
         return c;
     }
 

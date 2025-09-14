@@ -13,7 +13,7 @@ struct Comb {
     s2[i][j] = number of ways to partition i elements into j subsets
     */
  
-    void get_fact(int x) {
+    Comb(int x) {
         fact.resize(x + 1);
         factinv.resize(x + 1);
         fact[0] = 1;
