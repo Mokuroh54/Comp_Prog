@@ -69,14 +69,55 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
+const int MAXN = 200010;
 int N;
+int freq[MAXN];
+int tans[MAXN][32];
 
 void reset_tc() {
+    for (int i = 1; i <= N; i++) {
+        freq[i] = 0;
+        for (int j = 0; j < 32; j++) tans[i][j] = 0;
+    }
+}
 
+int score(int a) {
+    if (a == 0) return 1;
+    if (a == 1) return 0;
+    return (1 << (32 - __builtin_clz(a - 1))) - a;
 }
 
 void solve() {
+    cin >> N;
+    for (int i = 1; i <= N; i++) {
+        int n;
+        cin >> n;
+        freq[n]++;
+    }
+    int psum = 0;
+    int bit = 0;
+    tans[0][0] = 1;
+    for (int j = 1; j < 32; j++) tans[0][j] = INF;
+    for (int i = 1; i <= N; i++) {
+        psum += freq[i];
+        for (int j = 0; j < 32; j++) tans[i][j] = tans[i - 1][j];
+        while ((1 << bit) < psum) bit++;
+        tans[i][bit + 1] = min(tans[i][bit + 1], (1 << bit) - psum);
+    }
+
+    int gans = INF;
+    psum = 0;
+    for (int i = 1; i <= N; i++) {
+        psum += freq[i];
+        for (int j = 0; j < 32; j++) {
+            int small = (j ? (1 << (j - 1)) - tans[i][j] : 0);
+            int med = psum - small;
+            int big = N - psum;
+            int hi = tans[i][j] + score(med) + score(big);
+            gans = min(gans, hi);
+        }
+    }
+    cout << gans << endl;
     reset_tc();
 }
 
@@ -89,8 +130,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

@@ -31,7 +31,7 @@ using namespace std;
 #define ppf pop_front
 // #define cout cerr
 
-int INF = 1000000000;
+ll INF = 1000000000;
 ll LINF = 1000000000000000000;
 ll MOD = 0;
 
@@ -69,14 +69,45 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
-int N;
+const int MAXN = 200010;
+int N, K;
+int arr[MAXN], hi[MAXN];
 
 void reset_tc() {
-
+    for (int i = 1; i <= N; i++) arr[i] = hi[i] = 0;
 }
 
 void solve() {
+    cin >> N >> K;
+    for (int i = 1; i <= N; i++) cin >> arr[i];
+
+    int lb = 1, ub = N;
+    int ans = 0;
+    while (lb <= ub) {
+        int mid = (lb + ub) / 2;
+
+        for (int i = 1; i <= N; i++) hi[i] = (arr[i] >= mid ? 1 : -1) + hi[i - 1];
+        // cout << mid << endl;
+        // for (int i = 1; i <= N; i++) cout << hi[i] << " ";
+        // cout << endl;
+
+        int works = 0;
+        int pmin = 0;
+        for (int i = K; i <= N; i++) {
+            pmin = min(pmin, hi[i - K]);
+            if (hi[i] - pmin > 0) {
+                // cout << i << " " << hi[i] << " " << pmin << endl;
+                works = 1;
+            }
+        }
+
+        if (works) {
+            ans = mid;
+            lb = mid + 1;
+        }
+        else ub = mid - 1;
+    }
+    cout << ans << endl;
     reset_tc();
 }
 
@@ -88,9 +119,9 @@ int main() {
     cout.tie(0);
 
     int T;
-    // T = 1;
+    T = 1;
     // cin >> T;
-    T = "change";
+    // T = "change";
     while (T--) solve();
 
     return 0;

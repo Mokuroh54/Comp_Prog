@@ -21,7 +21,7 @@ using namespace std;
 #define ld long double
 #define ull unsigned ll
 
-#define endl "\n"
+// #define endl "\n"
 #define EPS 1e-9
 
 #define size(v) (int) v.size()
@@ -76,7 +76,38 @@ void reset_tc() {
 
 }
 
+ll ask(int l, int r) {
+    cout << "? " << l << " " << r << endl;
+    ll n;
+    cin >> n;
+    return n;
+}
+
 void solve() {
+    cin >> N;
+
+    ll tsum = ask(1, N);
+    int gl = 1, gr = N;
+    int cnt = 1;
+    while (gl < gr) {
+        int l = gl, r = gr;
+        int ans = 0;
+        while (l <= r) {
+            int mid = (l + r) / 2;
+            ll sum = ask(gl, mid);
+            if (sum <= tsum / (1 << cnt)) {
+                ans = mid;
+                l = mid + 1;
+            }
+            else r = mid - 1;
+        }
+        if (ans - gl + 1 < gr - ans) gr = ans;
+        else gl = ans + 1;
+        cnt++;
+    }
+
+    cout << "! " << tsum / (1 << (cnt - 1)) << endl;
+
     reset_tc();
 }
 
@@ -89,8 +120,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

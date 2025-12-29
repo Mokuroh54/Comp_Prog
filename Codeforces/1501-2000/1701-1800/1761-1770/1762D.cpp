@@ -21,7 +21,7 @@ using namespace std;
 #define ld long double
 #define ull unsigned ll
 
-#define endl "\n"
+// #define endl "\n"
 #define EPS 1e-9
 
 #define size(v) (int) v.size()
@@ -31,7 +31,7 @@ using namespace std;
 #define ppf pop_front
 // #define cout cerr
 
-int INF = 1000000000;
+ll INF = 1000000000;
 ll LINF = 1000000000000000000;
 ll MOD = 0;
 
@@ -76,7 +76,33 @@ void reset_tc() {
 
 }
 
+int ask(int a, int b) {
+    cout << "? " << a << " " << b << endl;
+    int n;
+    cin >> n;
+    return n;
+}
+
 void solve() {
+    cin >> N;
+    int c1 = 1, c2 = 2;
+    int a1 = ask(c1, c2);
+    for (int i = 3; i <= N; i++) {
+        int a2 = ask(c1, i);
+        int a3 = ask(c2, i);
+
+        if (gcd(a1, a2) != a3) {
+            a1 = a3;
+            c1 = i;
+        }
+        else if (gcd(a1, a3) != a2) {
+            a1 = a2;
+            c2 = i;
+        }
+    }
+    cout << "! " << c1 << " " << c2 << endl;
+    int yo;
+    cin >> yo;
     reset_tc();
 }
 
@@ -89,8 +115,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

@@ -69,14 +69,53 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
-int N;
+const int MAXN = 100010;
+int N, K;
+int arr[MAXN];
+ll dp[370][370];
+ll tmp[370][370];
+ll tmp2[370];
+int pv[MAXN], nv[MAXN];
 
 void reset_tc() {
-
+    for (int m = 0; m <= K; m++) for (int s = 0; s <= K; s++)
+        dp[m][s] = 0;
+    
+    for (int i = 0; i <= N + 1; i++) arr[i] = pv[i] = nv[i] = 0;
 }
 
 void solve() {
+    cin >> N >> K;
+    for (int i = 1; i <= N; i++) cin >> arr[i];
+
+    int id = 0;
+    for (int i = 1; i <= N; i++) if (arr[i] > arr[id]) {
+        nv[id] = i;
+        pv[i] = id;
+        id = i;
+    }
+    nv[id] = N + 1;
+    pv[N + 1] = id;
+
+    for (int i = id; i >= 1; i = pv[i]) {
+        for (int m = 0; m <= K; m++) for (int s = m; s <= K; s++) 
+            tmp[m][s] = -LINF;
+        
+        for (int s = 0; s <= K; s++) tmp2[s] = -LINF;
+        
+        for (int m = 0; m <= arr[i]; m++) for (int s = m; s <= K; s++) {
+            maxeq(tmp2[s - m], dp[m][s] + 1ll * m * (nv[i] - i));
+        }
+        
+        for (int m2 = 0; m2 < arr[i]; m2++) for (int s = 0; s <= K; s++) {
+            maxeq(tmp[m2][s], tmp2[s]);
+        }
+        for (int m = 0; m <= K; m++) for (int s = m; s <= K; s++) {
+            maxeq(dp[m][s], max(dp[m][s] + 1ll * m * (nv[i] - i), tmp[m][s]));
+        }
+    }
+
+    cout << dp[0][0] << endl;
     reset_tc();
 }
 
@@ -89,8 +128,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

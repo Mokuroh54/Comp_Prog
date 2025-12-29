@@ -31,7 +31,7 @@ using namespace std;
 #define ppf pop_front
 // #define cout cerr
 
-int INF = 1000000000;
+ll INF = 1000000000;
 ll LINF = 1000000000000000000;
 ll MOD = 0;
 
@@ -69,14 +69,43 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
-int N;
+const int MAXN = 200010;
+int N, Q;
+int a[MAXN];
+map<int, int> milestones[MAXN];
+int gifts[MAXN];
 
 void reset_tc() {
 
 }
 
 void solve() {
+    cin >> N;
+    for (int i = 1; i <= N; i++) cin >> a[i];
+
+    ll ans = 0;
+    for (int i = 1; i <= N; i++) ans += a[i];
+
+    cin >> Q;
+    while (Q--) {
+        int s, t, u;
+        cin >> s >> t >> u;
+
+        int w = milestones[s][t];
+
+        if (u) ans -= max(a[u] - gifts[u], 0);
+        if (w) ans -= max(a[w] - gifts[w], 0);
+
+        if (w) gifts[w]--;
+        milestones[s][t] = u;
+        if (!u) milestones[s].erase(t);
+        if (u) gifts[u]++;
+
+        if (u) ans += max(a[u] - gifts[u], 0);
+        if (w) ans += max(a[w] - gifts[w], 0);
+
+        cout << ans << endl;
+    }
     reset_tc();
 }
 
@@ -88,9 +117,9 @@ int main() {
     cout.tie(0);
 
     int T;
-    // T = 1;
+    T = 1;
     // cin >> T;
-    T = "change";
+    // T = "change";
     while (T--) solve();
 
     return 0;

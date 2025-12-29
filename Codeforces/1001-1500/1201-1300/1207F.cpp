@@ -69,14 +69,37 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
+const int MAXN = 500010;
 int N;
+int arr[MAXN];
+int freq[MAXN];
+int mods[710][710];
 
 void reset_tc() {
 
 }
 
 void solve() {
+    cin >> N;
+    while (N--) {
+        int t, a, b;
+        cin >> t >> a >> b;
+        if (t == 1) {
+            for (int i = 1; i <= 700; i++) mods[i][a % i] -= arr[a];
+            arr[a] += b;
+            for (int i = 1; i <= 700; i++) mods[i][a % i] += arr[a];
+        }
+        else {
+            if (a <= 700) cout << mods[a][b] << endl;
+            else {
+                int ans = 0;
+                for (int j = b; j <= 500000; j += a) ans += arr[j];
+                cout << ans << endl;
+            }
+        }
+    }
+
+
     reset_tc();
 }
 
@@ -88,9 +111,9 @@ int main() {
     cout.tie(0);
 
     int T;
-    // T = 1;
+    T = 1;
     // cin >> T;
-    T = "change";
+    // T = "change";
     while (T--) solve();
 
     return 0;

@@ -1,75 +1,87 @@
 struct ST {
-    vector<ll> seg, lazy, lc, rc;
+    struct Node {
+        ll sum = 0;
+        ll minv = 0;
+        ll maxv = 0;
+        ll lazy = 0;
+        int lc = -1, rc = -1;
 
-    PST() {
+        void merge(Node& b, Node& c) {
+            sum = b.sum + c.sum;
+            minv = min(b.minv, c.minv);
+            maxv = max(b.maxv, c.maxv);
+        }
+
+        bool isLeaf() {
+            return lc == -1 && rc == -1;
+        }
+    };
+    vector<Node> seg;
+
+    ST() {
         create();
     }
 
     int create() {
-        seg.pb(0);
-        lazy.pb(0);
-        lc.pb(-1);
-        rc.pb(-1);
-        return seg.size() - 1;
+        seg.pb(Node());
+        return size(seg) - 1;
     }
 
-    void apply(ll v, int cid) {
-        lazy[cid] += v;
-        seg[cid] += v;
+    void apply(int cid, ll v, int ss, int se) {
+        seg[cid].lazy += v;
+        seg[cid].sum += v * (se - ss + 1);
+        seg[cid].minv += v;
+        seg[cid].maxv += v;
     }
 
     void push(int cid, int ss, int se) {
         if (ss != se) {
-            if (lc[cid] == -1) lc[cid] = create();
-            apply(lazy[cid], lc[cid]);
-            if (rc[cid] == -1) rc[cid] = create();
-            apply(lazy[cid], rc[cid]);
+            int mid = (ss + se) / 2;
+            if (seg[cid].lc == -1) seg[cid].lc = create();
+            apply(seg[cid].lc, seg[cid].lazy, ss, mid);
+            if (seg[cid].rc == -1) seg[cid].rc = create();
+            apply(seg[cid].rc, seg[cid].lazy, mid + 1, se);
         }
-        lazy[cid] = 0;
+        seg[cid].lazy = 0;
     }
 
     void update(int a, int b, ll v, int cid, int ss, int se) {
+        if (a > b) return;
         if (a <= ss && se <= b) {
-            apply(v, cid);
+            apply(cid, v, ss, se);
             return;
         }
 
         push(cid, ss, se);
         int mid = (ss + se) / 2;
         if (a <= mid) {
-            if (lc[cid] == -1) lc[cid] = create();
-            update(a, v, lc[cid], ss, mid);
+            if (seg[cid].lc == -1) seg[cid].lc = create();
+            update(a, b, v, seg[cid].lc, ss, mid);
         }
-        else {
-            if (rc[cid] == -1) rc[cid] = create();
-            update(a, v, rc[cid], mid + 1, se);
+        if (b > mid) {
+            if (seg[cid].rc == -1) seg[cid].rc = create();
+            update(a, b, v, seg[cid].rc, mid + 1, se);
         }
 
-        seg[cid] = 0;
-        if (lc[cid] != -1) seg[cid] += seg[lc[cid]];
-        if (rc[cid] != -1) seg[cid] += seg[rc[cid]];
+        seg[cid].merge(seg[seg[cid].lc], seg[seg[cid].rc]);
     }
 
-    ll query(int a, int b, int cid, int ss, int se) {
+    Node query(int a, int b, int cid, int ss, int se) {
         if (a <= ss && se <= b) return seg[cid];
 
         push(cid, ss, se);
         int mid = (ss + se) / 2;
-        ll ans = 0;
-        if (a <= mid && lc[cid] != -1) {
-            ans += query(a, b, lc[cid], ss, mid);
+        Node ans = Node();
+        if (a <= mid && seg[cid].lc != -1) {
+            Node lans = query(a, b, seg[cid].lc, ss, mid);
+            ans.merge(ans, lans);
         }
-        if (b > mid && rc[cid] != -1) {
-            ans += query(a, b, rc[cid], mid + 1, se);
+        if (b > mid && seg[cid].rc != -1) {
+            Node rans = query(a, b, seg[cid].rc, mid + 1, se);
+            ans.merge(ans, rans);
         }
+        seg[cid].merge(seg[seg[cid].lc], seg[seg[cid].rc]);
 
         return ans;
-    }
-
-    void clear() {
-        seg.clear();
-        lazy.clear();
-        lc.clear();
-        rc.clear();
     }
 };

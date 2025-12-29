@@ -77,6 +77,21 @@ void reset_tc() {
 }
 
 void solve() {
+    cin >> N;
+    string str;
+    cin >> str;
+    for (int i = 2; i <= N; i++) {
+        string str2;
+        cin >> str2;
+        str = min(str2 + str, str + str2);
+        // int bad = 0;
+        // for (int j = 0; j < min(str.length(), str2.length()); j++) {
+        //     if (str)
+        // }
+        // if (str2 <= str) str = str2 + str;
+        // else str += str2;
+    }
+    cout << str << endl;
     reset_tc();
 }
 
@@ -89,8 +104,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

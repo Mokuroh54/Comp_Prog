@@ -77,6 +77,29 @@ void reset_tc() {
 }
 
 void solve() {
+    string str;
+    cin >> str;
+
+    int ops = 0;
+    if (str[0] == 'u') {
+        str[0] = 's';
+        ops++;
+    }
+    if (str[str.length() - 1] == 'u') {
+        str[str.length() - 1] = 's';
+        ops++;
+    }
+
+    int last = 0;
+    for (int i = 1; i < str.length(); i++) {
+        if (str[i] == 's') {
+            ops += (i - last - 1) / 2;
+            // cout << i << " " << last << endl;
+            last = i;
+        }
+    }
+
+    cout << ops << endl;
     reset_tc();
 }
 
@@ -89,8 +112,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

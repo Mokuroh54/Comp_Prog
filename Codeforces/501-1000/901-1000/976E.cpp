@@ -69,14 +69,57 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
-int N;
+const int MAXN = 200010;
+int N, A, B;
+pll arr[MAXN];
+
+bool Comp(const pll& p1, const pll& p2) {
+    return p1.FF - p1.SS > p2.FF - p2.SS;
+}
 
 void reset_tc() {
 
 }
 
 void solve() {
+    cin >> N >> A >> B;
+    for (int i = 1; i <= N; i++) cin >> arr[i].FF >> arr[i].SS;
+    ll ans = 0;
+    for (int i = 1; i <= N; i++) ans += arr[i].SS;
+
+    sort(arr + 1, arr + 1 + N, Comp);
+
+    if (B > 0) {
+        ll ans1 = 0;
+        for (int i = 1; i <= B; i++) ans1 += max(0ll, arr[i].FF - arr[i].SS);
+
+        if (A > 0) {
+            ll best = 0;
+            for (int i = 1; i <= B; i++) {
+                ll tans = ans1 - max(0ll, arr[i].FF - arr[i].SS);
+                tans += arr[i].FF * (1ll << A) - arr[i].SS;
+                best = max(best, tans);
+            }
+            ans1 = best;
+        }
+
+        ll ans2 = 0;
+        for (int i = 1; i < B; i++) ans2 += max(0ll, arr[i].FF - arr[i].SS);
+
+        if (A > 0) {
+            ll best = 0;
+            for (int i = B + 1; i <= N; i++) {
+                ll tans = ans2 + arr[i].FF * (1ll << A) - arr[i].SS;
+                best = max(best, tans);
+            }
+            ans2 = best;
+        }
+
+        ans += max({ans1, ans2, 0ll});
+    }
+
+    cout << ans << endl;
+
     reset_tc();
 }
 
@@ -88,9 +131,9 @@ int main() {
     cout.tie(0);
 
     int T;
-    // T = 1;
+    T = 1;
     // cin >> T;
-    T = "change";
+    // T = "change";
     while (T--) solve();
 
     return 0;

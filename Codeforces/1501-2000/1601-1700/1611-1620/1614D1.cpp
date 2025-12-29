@@ -31,7 +31,7 @@ using namespace std;
 #define ppf pop_front
 // #define cout cerr
 
-int INF = 1000000000;
+ll INF = 1000000000;
 ll LINF = 1000000000000000000;
 ll MOD = 0;
 
@@ -69,14 +69,35 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
+const int MAXN = 100010, MAXV = 5000010;
 int N;
+int arr[MAXN];
+int cnt[MAXV];
+ll score[MAXV];
 
 void reset_tc() {
 
 }
 
 void solve() {
+    cin >> N;
+    int V = 5000000;
+    for (int i = 1; i <= N; i++) cin >> arr[i];
+
+    for (int i = 1; i <= N; i++) cnt[arr[i]]++;
+    for (int i = 1; i <= V; i++) for (int j = 2; i * j <= V; j++) cnt[i] += cnt[i * j];
+
+    for (int i = V; i >= 1; i--) {
+        score[i] = 1ll * i * cnt[i];
+        for (int j = 2; i * j <= V; j++) {
+            score[i] = max(score[i], score[i * j] + 1ll * i * (cnt[i] - cnt[i * j]));
+        }
+    }
+
+    ll best_score = 0;
+    for (int i = 1; i <= V; i++) best_score = max(best_score, score[i]);
+    cout << best_score << endl;
+
     reset_tc();
 }
 
@@ -88,9 +109,9 @@ int main() {
     cout.tie(0);
 
     int T;
-    // T = 1;
+    T = 1;
     // cin >> T;
-    T = "change";
+    // T = "change";
     while (T--) solve();
 
     return 0;

@@ -69,14 +69,60 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
-int N;
+const int MAXN = 100010;
+int N, K;
+int arr[MAXN];
+map<int, int> freq;
+set<pii> largers;
+set<pii> support;
 
 void reset_tc() {
-
+    for (int i = 1; i <= N; i++) arr[i] = 0;
+    freq.clear();
+    largers.clear();
+    support.clear();
 }
 
 void solve() {
+    cin >> N >> K;
+    for (int i = 1; i <= N; i++) cin >> arr[i];
+    for (int i = 1; i <= N; i++) freq[arr[i]]++;
+
+    int max_mex = 0;
+    int have = N;
+    int ops_needed = 0;
+    for (int i = 0; i < N; i++) {
+        if (!freq.count(i)) ops_needed++;
+        else have--;
+        if (ops_needed <= min(have, K)) max_mex = i + 1;
+    }
+
+    for (pii p : freq) {
+        if (p.FF >= max_mex) largers.insert(pii(p.SS, p.FF));
+        else support.insert(pii(p.SS, p.FF));
+    }
+
+    int ans = size(freq);
+    for (int i = 0; i < max_mex; i++) {
+        if (!freq[i]) {
+            set<pii>* guy;
+            if (size(largers)) guy = &largers;
+            else guy = &support;
+
+            int ns = guy->begin()->SS;
+            guy->erase(guy->begin());
+            freq[ns]--;
+            if (freq[ns]) guy->insert(pii(freq[ns], ns));
+        }
+
+        // cout << "mex is: " << i << endl;
+        // for (pii p : largers) cout << p.FF << " " << p.SS << endl;
+        // cout << endl;
+
+        mineq(ans, size(largers));
+    }
+
+    cout << ans << endl;
     reset_tc();
 }
 
@@ -89,8 +135,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

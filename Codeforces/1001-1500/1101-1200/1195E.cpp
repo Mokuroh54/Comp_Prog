@@ -31,7 +31,7 @@ using namespace std;
 #define ppf pop_front
 // #define cout cerr
 
-int INF = 1000000000;
+ll INF = 1000000000;
 ll LINF = 1000000000000000000;
 ll MOD = 0;
 
@@ -69,14 +69,66 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
-int N;
+const int MAXN = 3010;
+int N, M, A, B;
+ll griddy[MAXN][MAXN];
+ll minv[MAXN][MAXN];
 
 void reset_tc() {
 
 }
 
 void solve() {
+    cin >> N >> M >> A >> B;
+    ll g, x, y, z;
+    cin >> g >> x >> y >> z;
+    MOD = z;
+    for (int i = 1; i <= N; i++) {
+        for (int j = 1; j <= M; j++) {
+            griddy[i][j] = g;
+            g = add(mult(g, x), y);
+            // cout << griddy[i][j] << " ";
+        }
+        // cout << endl;
+    }
+    
+    for (int j = 1; j <= M; j++) {
+        deque<pll> guys;
+        for (int i = 1; i < A; i++) {
+            while (!guys.empty() && guys.back().FF > griddy[i][j]) guys.ppb();
+            guys.pb(pll(griddy[i][j], i + A));
+        }
+        for (int i = A; i <= N; i++) {
+            if (!guys.empty() && guys.front().SS == i) guys.ppf();
+            while (!guys.empty() && guys.back().FF > griddy[i][j]) guys.ppb();
+            guys.pb(pll(griddy[i][j], i + A));
+            minv[i - A + 1][j] = guys.front().FF;
+        }
+    }
+    // for (int i = 1; i <= N; i++) {
+    //     for (int j = 1; j <= M; j++) {
+    //         cout << minv[i][j] << " ";
+    //     }
+    //     cout << endl;
+    // }
+
+    ll ans = 0;
+    for (int i = 1; i <= N - A + 1; i++) {
+        deque<pll> guys;
+        for (int j = 1; j < B; j++) {
+            while (!guys.empty() && guys.back().FF > minv[i][j]) guys.ppb();
+            guys.pb(pll(minv[i][j], j + B));
+        }
+        for (int j = B; j <= M; j++) {
+            if (!guys.empty() && guys.front().SS == j) guys.ppf();
+            while (!guys.empty() && guys.back().FF > minv[i][j]) guys.ppb();
+            guys.pb(pll(minv[i][j], j + B));
+            ans += guys.front().FF;
+        }
+    }
+
+    cout << ans << endl;
+
     reset_tc();
 }
 
@@ -88,9 +140,9 @@ int main() {
     cout.tie(0);
 
     int T;
-    // T = 1;
+    T = 1;
     // cin >> T;
-    T = "change";
+    // T = "change";
     while (T--) solve();
 
     return 0;

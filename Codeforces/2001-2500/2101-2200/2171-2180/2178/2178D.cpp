@@ -69,14 +69,55 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
-int N;
+const int MAXN = 200010;
+int N, M;
+pii arr[MAXN];
 
 void reset_tc() {
-
+    for (int i = 1; i <= N; i++) arr[i].FF = arr[i].SS = 0;
 }
 
 void solve() {
+    cin >> N >> M;
+    for (int i = 1; i <= N; i++) cin >> arr[i].FF;
+    for (int i = 1; i <= N; i++) arr[i].SS = i;
+    sort(arr + 1, arr + 1 + N, greater<pii>());
+    
+    vector<pii> ops;
+    if (M * 2 > N) cout << -1 << endl;
+    else if (M == 0) {
+        ll rsum = 0;
+        for (int i = 2; i <= N; i++) rsum += arr[i].FF;
+        if (rsum < arr[1].FF) cout << -1 << endl;
+        else {
+            int border = 2;
+            for (int i = 2; i <= N; i++) {
+                if (rsum >= arr[1].FF) {
+                    border = i;
+                    rsum -= arr[i].FF;
+                }
+            }
+            for (int i = border - 1; i >= 2; i--) {
+                ops.pb(pii(arr[i + 1].SS, arr[i].SS));
+            }
+            for (int i = border + 1; i <= N; i++) {
+                ops.pb(pii(arr[i].SS, arr[1].SS));
+            }
+            ops.pb(pii(arr[1].SS, arr[2].SS));
+            cout << size(ops) << endl;
+            for (pii p : ops) cout << p.FF << " " << p.SS << endl;
+        }
+    }
+    else {
+        for (int i = N - 1; i >= 2 * M; i--) {
+            ops.pb(pii(arr[i + 1].SS, arr[i].SS));
+        }
+        for (int i = 1; i <= M; i++) {
+            ops.pb(pii(arr[i].SS, arr[i + M].SS));
+        }
+        cout << size(ops) << endl;
+        for (pii p : ops) cout << p.FF << " " << p.SS << endl;
+    }
     reset_tc();
 }
 
@@ -89,8 +130,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

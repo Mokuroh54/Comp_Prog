@@ -70,13 +70,20 @@ mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 const int MAXN = 0;
-int N;
+int L, B, A;
 
 void reset_tc() {
 
 }
 
 void solve() {
+    cin >> L >> A >> B;
+    int best = A;
+    for (int i = 1; i <= L; i++) {
+        A = (A + B) % L;
+        best = max(best, A);
+    }
+    cout << best << endl;
     reset_tc();
 }
 
@@ -89,8 +96,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

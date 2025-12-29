@@ -69,14 +69,62 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
-int N;
+const int MAXN = 3010;
+int N, K;
+int arr[MAXN];
+vector<int> moves[MAXN * MAXN];
 
 void reset_tc() {
 
 }
 
 void solve() {
+    cin >> N >> K;
+    for (int i = 1; i <= N; i++) {
+        char c;
+        cin >> c;
+        if (c == 'R') arr[i] = 1;
+    }
+
+    int tmoves = 0;
+    int reserves = 0;
+    for (int i = 1; i <= N * N; i++) {
+        for (int j = N - 1; j >= 1; j--) {
+            if (arr[j] == 1 && arr[j + 1] == 0) {
+                moves[i].pb(j);
+                tmoves++;
+            }
+        }
+        for (int n : moves[i]) {
+            swap(arr[n], arr[n + 1]);
+        }
+        if (size(moves[i])) reserves++;
+        else break;
+    }
+
+    if (K < reserves || tmoves < K) cout << -1 << endl;
+    else {
+        for (int i = 1; i <= N * N; i++) {
+            for (int j = 0; j < size(moves[i]); j++) {
+                if (K == reserves) {
+                    vector<int> run;
+                    for (int k = j; k < size(moves[i]); k++) {
+                        run.pb(moves[i][k]);
+                    }
+                    cout << size(run) << " ";
+                    for (int n : run) cout << n << " ";
+                    cout << endl;
+                    K--;
+                    break;
+                }
+                else {
+                    cout << 1 << " " << moves[i][j] << endl;
+                    K--;
+                }
+            }
+            if (size(moves[i])) reserves--;
+        }
+    }
     reset_tc();
 }
 
@@ -88,10 +136,10 @@ int main() {
     cout.tie(0);
 
     int T;
-    // T = 1;
+    T = 1;
     // cin >> T;
-    T = "change";
+    // T = "change";
     while (T--) solve();
 
     return 0;
-} 
+}

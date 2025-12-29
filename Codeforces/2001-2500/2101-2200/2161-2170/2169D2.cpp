@@ -70,13 +70,34 @@ mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 const int MAXN = 0;
-int N;
+ll x, y, k;
 
 void reset_tc() {
 
 }
 
 void solve() {
+    cin >> x >> y >> k;
+    if (y == 1) cout << -1 << endl;
+    else {
+        int fail = 0;
+        ll i = 0;
+        while (i < x) {
+            ll dist = (k - 1) / (y - 1);
+            if (!dist) break;
+            ll reach = (k + y - 2) / (y - 1) * (y - 1) + 1;
+            ll jump = min(x - i, (reach - k + dist - 1) / dist);
+            // cout << k << " " << reach << " " << jump << " " << dist << endl;
+            k += dist * jump;
+            if (k > 1000000000000) {
+                fail = 1;
+                break;
+            }
+            i += jump;
+        }
+        if (fail) cout << -1 << endl;
+        else cout << k << endl;
+    }
     reset_tc();
 }
 
@@ -89,8 +110,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

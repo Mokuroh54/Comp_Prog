@@ -21,7 +21,7 @@ using namespace std;
 #define ld long double
 #define ull unsigned ll
 
-#define endl "\n"
+// #define endl "\n"
 #define EPS 1e-9
 
 #define size(v) (int) v.size()
@@ -31,7 +31,7 @@ using namespace std;
 #define ppf pop_front
 // #define cout cerr
 
-int INF = 1000000000;
+ll INF = 1000000000;
 ll LINF = 1000000000000000000;
 ll MOD = 0;
 
@@ -76,7 +76,52 @@ void reset_tc() {
 
 }
 
+int ask(int a, int v) {
+    cout << "? " << a << " " << v << endl;
+    int n;
+    cin >> n;
+    return n;
+}
+
 void solve() {
+    cin >> N;
+
+    int v = N;
+
+    vector<int> cands;
+    for (int i = 1; i < N; i++) cands.pb(i);
+
+    int resembles = 0;
+    vector<int> has[2];
+    int taker = 0;
+    for (int j = 0; (1 << j) <= N; j++) {
+        // if (!size(cands)) break;
+        for (int i : cands) has[ask(i, (1 << j))].pb(i);
+
+        // cout << taker << " " << (N / (1 << j)) << endl;
+
+        int expect = (v / (1 << j)) + taker;
+
+        int expect_no = (expect + taker) / 2;
+        int expect_yes = expect - taker;
+
+        // cout << "looking at bit " << j << endl;
+        // cout << expect_no << " " << expect_yes << endl;
+        // cout << size(has[0]) << " " << size(has[1]) << endl;
+
+        if (size(has[0]) < expect_no) cands = has[0];
+        else if (size(has[1]) < expect_yes) {
+            resembles |= (1 << j);
+            v -= (1 << j);
+            cands = has[1];
+            taker = 1;
+        }
+        else assert(0);
+
+        has[0].clear();
+        has[1].clear();
+    }
+    cout << "! " << resembles << endl;
     reset_tc();
 }
 
@@ -89,8 +134,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

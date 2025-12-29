@@ -77,6 +77,12 @@ void reset_tc() {
 }
 
 void solve() {
+    string str;
+    cin >> str;
+    int ys = 0;
+    for (int i = 0; i < str.length(); i++) if (str[i] == 'Y') ys++;
+    if (ys < 2) cout << "YES" << endl;
+    else cout << "NO" << endl;
     reset_tc();
 }
 
@@ -89,8 +95,8 @@ int main() {
 
     int T;
     // T = 1;
-    // cin >> T;
-    T = "change";
+    cin >> T;
+    // T = "change";
     while (T--) solve();
 
     return 0;

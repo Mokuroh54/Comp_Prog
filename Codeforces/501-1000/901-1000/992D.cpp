@@ -33,7 +33,8 @@ using namespace std;
 
 int INF = 1000000000;
 ll LINF = 1000000000000000000;
-ll MOD = 0;
+ll MOD1 = 1000000007;
+ll MOD2 = 1000000009;
 
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
@@ -45,7 +46,7 @@ typedef vector<pii> vpii;
 #define add(a, b) (((a) + (b)) >= MOD ? (a) + (b) - MOD : (a) + (b))
 #define sub(a, b) (((a) - (b)) >= 0 ? (a) - (b) : (a) + MOD - (b))
 #define mult(a, b) (((a) * (b)) % MOD)
-inline ll power(ll a, ll b) {
+inline ll power(ll a, ll b, ll MOD) {
     ll n = a;
     ll ans = 1;
 
@@ -69,14 +70,61 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
-int N;
+const int MAXN = 200010;
+int N, K;
+ll arr[MAXN];
+vector<ll> cont;
+vector<ll> csum;
 
 void reset_tc() {
 
 }
 
 void solve() {
+    cin >> N >> K;
+    for (int i = 1; i <= N; i++) cin >> arr[i];
+
+    int lg = 0;
+    int lv = 0;
+    for (int i = 1; i <= N; i++) {
+        if (arr[i] > 1) {
+            cont.pb(arr[i]);
+            csum.pb(lg);
+            lg = 0;
+            lv = i;
+        }
+        else lg++;
+    }
+    cont.pb(1);
+    csum.pb(lg);
+
+
+    ll ans = 0;
+    for (int i = 0; i < size(cont); i++) {
+        // cout << cont[i] << " " << csum[i] << endl;
+        ll prod = 1;
+        ll sum = -csum[i] * K;
+        for (int j = i; j < min(size(cont) - 1, i + 60); j++) {
+            if (prod >= LINF / cont[j]) break;
+
+            prod *= cont[j];
+            sum += (csum[j] + cont[j]) * K;
+
+            if ((prod - sum) % K == 0 && prod >= sum && prod - sum <= (csum[i] + csum[j + 1]) * K) {
+                ans += min({csum[i], csum[j + 1], csum[i] + csum[j + 1] - (prod - sum) / K, (prod - sum) / K}) + 1;
+                // cout << i << " " << j << endl;
+                // cout << prod << " " << sum << endl;
+                // cout << "score" << endl;
+            }
+            // cout << i << " " << j << endl;
+            // cout << prod << " " << sum << endl;
+        }
+        // cout << prod << " " << sum << endl;
+    }
+
+    if (K == 1) for (int n : csum) ans += n;
+
+    cout << ans << endl;
     reset_tc();
 }
 
@@ -88,9 +136,9 @@ int main() {
     cout.tie(0);
 
     int T;
-    // T = 1;
+    T = 1;
     // cin >> T;
-    T = "change";
+    // T = "change";
     while (T--) solve();
 
     return 0;

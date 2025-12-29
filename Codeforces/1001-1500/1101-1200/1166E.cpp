@@ -69,14 +69,40 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 0;
-int N;
+const int MAXN = 10010;
+int M, N;
+vector<int> days[MAXN];
+int freq[MAXN];
 
 void reset_tc() {
 
 }
 
 void solve() {
+    cin >> M >> N;
+    for (int i = 1; i <= M; i++) {
+        int n;
+        cin >> n;
+        for (int j = 1; j <= n; j++) {
+            int r;
+            cin >> r;
+            days[i].pb(r);
+        }
+    }
+
+    int good = 1;
+    for (int i = 1; i <= M; i++) {
+        for (int j = 1; j <= M; j++) {
+            int tmp_good = 0;
+            for (int ig : days[i]) freq[ig]++;
+            for (int jg : days[j]) if (freq[jg]) tmp_good = 1;
+            for (int ig : days[i]) freq[ig]--;
+            if (!tmp_good) good = 0;
+        }
+    }
+
+    if (good) cout << "possible" << endl;
+    else cout << "impossible" << endl;
     reset_tc();
 }
 
@@ -88,9 +114,9 @@ int main() {
     cout.tie(0);
 
     int T;
-    // T = 1;
+    T = 1;
     // cin >> T;
-    T = "change";
+    // T = "change";
     while (T--) solve();
 
     return 0;
