@@ -68,13 +68,4 @@ struct ST {
         }
         return ans;
     }
-
-    void clear(int cid, int ss, int se) {
-        seg[cid] = Node();
-        if (ss == se) return;
-
-        int mid = (ss + se) / 2;
-        clear(cid * 2, ss, mid);
-        clear(cid * 2 + 1, mid + 1, se);
-    }
 };

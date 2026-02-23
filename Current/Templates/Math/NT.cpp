@@ -1,31 +1,56 @@
 struct NT {
     vector<int> primes;
     vector<int> sieve;
+    vector<int> num_divs;
+    vector<int> cnt;
+    vector<int> npf;
     vector<vector<int>> divisors;
     vector<vector<pii>> factorization;
 
     NT(int x) {
         sieve.resize(x + 1);
-        divisors.resize(x + 1);
+        num_divs.resize(x + 1);
+        cnt.resize(x + 1);
+        npf.resize(x + 1);
 
         sieve[1] = 1;
-        for (int i = 2; i <= x; i++) if (!sieve[i]) {
-            primes.pb(i);
-            for (int j = 2; i * j <= x; j++) sieve[i * j] = i;
-        }
-
         for (int i = 2; i <= x; i++) {
             if (!sieve[i]) {
-                divisors[i].pb(1);
-                divisors[i].pb(i);
+                primes.pb(i);
+                sieve[i] = i;
+                num_divs[i] = 2;
+                cnt[i] = 2;
+                npf[i] = 1;
             }
-            else {
-                divisors[i] = divisors[i / sieve[i]];
-                for (int n : divisors[i / sieve[i]]) if ((i / sieve[i] / n) % sieve[i]) {
-                    divisors[i].pb(n * sieve[i]);
+            for (int p : primes) {
+                if (i * p > x || p > sieve[i]) break;
+                sieve[i * p] = p;
+
+                if (i % p == 0) {
+                    cnt[i * p] = cnt[i];
+                    num_divs[i * p] = num_divs[i] / cnt[i] * cnt[i * p];
+                    npf[i * p] = npf[i];
+                    break;
                 }
+
+                cnt[i * p] = 2;
+                num_divs[i * p] = num_divs[i] * 2;
+                npf[i * p] = npf[i] + 1;
             }
         }
+
+        // for (int i = 2; i <= x; i++) {
+        //     if (!sieve[i]) {
+        //         divisors[i].pb(1);
+        //         divisors[i].pb(i);
+        //     }
+        //     else {
+        //         divisors[i] = divisors[i / sieve[i]];
+        //         for (int n : divisors[i / sieve[i]]) if ((i / sieve[i] / n) % sieve[i]) {
+        //             divisors[i].pb(n * sieve[i]);
+        //         }
+        //     }
+        // }
 
         // for (int i = 2; i <= x; i++) {
         //     if (!sieve[i]) factorization[i].pb(pii(i, 1));
@@ -41,21 +66,40 @@ struct NT {
 
     // should only call once
     void factor(vector<pii>& ans, ll n) {
-        for (int p : primes) {
-            if (n < p) break;
-            if (n % p == 0) ans.pb(pii(p, 0));
-            while (n % p == 0) {
-                n /= p;
-                ans.back().SS++;
+        if (n < size(sieve)) {
+            while (n > 1) {
+                if (ans.empty() || ans.back().FF != sieve[n]) 
+                    ans.pb(pii(sieve[n], 1));
+                else ans.back().SS++;
+                n /= sieve[n];
             }
         }
-        if (n > 1) ans.pb(pii(n, 1));
+        else {
+            for (int p : primes) {
+                if (p * p > n) break;
+                if (n % p == 0) ans.pb(pii(p, 0));
+                while (n % p == 0) {
+                    n /= p;
+                    ans.back().SS++;
+                }
+            }
+            if (n > 1) ans.pb(pii(n, 1));
+        }
     }
 
-    // should only call once
+    int num_div(ll n) {
+        vector<pii> factors;
+        factor(factors, n);
+
+        int ans = 1;
+        for (pii p : factors) ans *= p.SS;
+        return ans;
+    }
+
     void gen_div(vector<int>& ans, ll n) {
         vector<pii> factors;
         factor(factors, n);
+        
         ans.pb(1);
         for (pii p : factors) {
             int asz = size(ans);

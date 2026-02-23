@@ -21,7 +21,7 @@ using namespace std;
 #define ld long double
 #define ull unsigned ll
 
-#define endl "\n"
+// #define endl "\n"
 #define EPS 1e-9
 
 #define size(v) (int) v.size()
@@ -69,69 +69,43 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 200010;
+const int MAXN = 110;
 int N;
-int s[MAXN], t[MAXN];
+ll arr[MAXN];
 
 void reset_tc() {
-    for (int i = 1; i <= N; i++) s[i] = t[i] = 0;
+    for (int i = 1; i <= N; i++) arr[i] = 0;
 }
 
-int please() {
-    set<pii> so, to;
-    int lz = 0;
-    for (int i = 1; i <= N; i++) {
-        if (s[i] == 0) {
-            if (lz < i - 1) so.insert(pii(lz, i - 1));
-            lz = i;
-        }
-    }
-    if (lz < N) so.insert(pii(lz, N));
-    
-    lz = 0;
-    for (int i = 1; i <= N; i++) {
-        if (t[i] == 0) {
-            if (lz < i - 1) to.insert(pii(lz, i - 1));
-            lz = i;
-        }
-    }
-    if (lz < N) to.insert(pii(lz, N));
+ll ask(int i, int j) {
+    cout << "? " << i << " " << j << endl;
 
-    int works = 1;
-    for (pii p : so) {
-        auto it = to.lower_bound(pii(p.FF, 0));
+    ll ret;
+    cin >> ret;
+    return ret;
+}
 
-        pii p2 = *it;
-        if ()
-    }
-
-    return 0;
+void answer() {
+    cout << "! ";
+    for (int i = 1; i <= N; i++) cout << arr[i] << " ";
+    cout << endl;
 }
 
 void solve() {
     cin >> N;
-    for (int i = 1; i <= N; i++) {
-        char c;
-        cin >> c;
-        s[i] = c - '0';
-    }
-    for (int i = 1; i <= N; i++) {
-        char c;
-        cin >> c;
-        t[i] = c - '0';
+
+    for (int i = 3; i <= N; i += 3) {
+        ll v1 = ask(i - 2, i - 1);
+        ll v2 = ask(i - 1, i);
+        arr[i - 1] = gcd(v1, v2);
+        arr[i - 2] = v1 / arr[i - 1];
+        arr[i] = v2 / arr[i - 1];
     }
 
-    int a1 = please();
-    for (int i = 1; i <= N; i++) {
-        s[i] = 1 - s[i];
-        t[i] = 1 - t[i];
-    }
-    int a2 = please();
-    int a = min(a1, a2);
+    for (int i = N / 3 * 3 + 1; i <= N; i++) arr[i] = ask(1, i) / arr[1];
 
-    if (a == INF) cout << -1 << endl;
-    else cout << a << endl;
-
+    answer();
+    
     reset_tc();
 }
 

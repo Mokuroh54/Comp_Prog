@@ -33,7 +33,7 @@ using namespace std;
 
 int INF = 1000000000;
 ll LINF = 1000000000000000000;
-ll MOD = 0;
+ll MOD = 1000000007;
 
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
@@ -69,29 +69,48 @@ inline ll power(ll a, ll b) {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int MAXN = 200;
-int N;
-ld arr[MAXN][3];
+const int MAXN = 100010;
+int N, Q;
+int arr[MAXN];
+int hi[MAXN];
+vector<pii> queries[MAXN];
+int ans[MAXN];
+int pow2[MAXN];
 
 void reset_tc() {
 
 }
 
 void solve() {
-    arr[0][0] = 1;
-    for (int i = 1; i < 80; i++) {
-        arr[i][0] = arr[i - 1][0] * 0.992;
-        arr[i][1] = arr[i - 1][0] * 0.008 * 0.5;
-        arr[i][2] = arr[i - 1][0] * 0.008 * 0.5;
+    cin >> N >> Q;
+    for (int i = 1; i <= N; i++) cin >> arr[i];
 
-        arr[i][1] = arr[i - 1][1] * 0.992;
-        arr[i][2] = arr[i - 1][1] * 0.008;
+    pow2[0] = 1;
+    for (int i = 1; i <= N; i++) pow2[i] = mult(pow2[i - 1], 2);
+
+    for (int i = 1; i <= Q; i++) {
+        int a, b;
+        cin >> a >> b;
+        queries[a].pb(pii(b, i));
     }
-    arr[80][1] = arr[79][0] * 0.5;
-    arr[80][2] = arr[79][0] * 0.5;
-    for (int i = 81; i <= 159; i++) {
-        arr[i][2] = arr[i - 1][0]
+
+    vector<int> bisv;
+    for (int i = 1; i <= N; i++) {
+        int t = arr[i];
+        for (int j : bisv) t = min(t, t ^ j);
+        
+        if (t) {
+            hi[i] = 1;
+            bisv.pb(t);
+        }
+
+        for (pii q : queries[i]) {
+            for (int j : bisv) q.FF = min(q.FF, q.FF ^ j);
+            if (!q.FF) ans[q.SS] = pow2[i - size(bisv)];
+        }
     }
+
+    for (int i = 1; i <= Q; i++) cout << ans[i] << endl;
     reset_tc();
 }
 
@@ -103,8 +122,8 @@ int main() {
     cout.tie(0);
 
     int T;
-    // T = 1;
-    cin >> T;
+    T = 1;
+    // cin >> T;
     // T = "change";
     while (T--) solve();
 
